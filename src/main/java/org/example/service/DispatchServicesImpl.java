@@ -13,6 +13,8 @@ import org.example.validation.Validations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+
 @Service
 public class DispatchServicesImpl implements DispatchServices {
     @Autowired
@@ -39,6 +41,21 @@ public class DispatchServicesImpl implements DispatchServices {
         response.setMessage("Login successful");
         return response;
     }
+
+    @Override
+    public HashMap<String, String> checkInformation(String email) {
+        HashMap<String, String> map = new HashMap<>();
+        DispatchDriver driver = dispatchDrivers.findByEmail(email);
+        map.put("Sender PhoneNumber: ", driver.getSenderPhoneNumber());
+        map.put("Sender Address: ", driver.getSenderAddress());
+        map.put("Receiver Address: ",driver.getReceiver().getAddress());
+        map.put("Receiver PhoneNumber: ",driver.getReceiver().getPhoneNumber());
+        return map;
+    }
+
+
+
+
 
     /*
         @Override

@@ -19,6 +19,9 @@ public class DispatchServicesImplTest {
         DispatchRegisterRequest request = request();
         DispatchRegisterResponse response = dispatchServices.register(request);
         assertEquals("register successful",response.getMessage());
+        DispatchRegisterRequest request1 = request1();
+        DispatchRegisterResponse response1 = dispatchServices.register(request1);
+        assertEquals("register successful",response1.getMessage());
     }
 
     private DispatchRegisterRequest request(){
@@ -29,6 +32,15 @@ public class DispatchServicesImplTest {
         request.setPhoneNumber("08033472283");
         return request;
     }
+    private DispatchRegisterRequest request1(){
+        DispatchRegisterRequest request = new DispatchRegisterRequest();
+        request.setEmail("korede@gmail.com");
+        request.setName("korede Eletu");
+        request.setPassword("koredeeletu");
+        request.setPhoneNumber("08033472283");
+        return request;
+    }
+
 
     @Test
     public void testLoginDispatch(){

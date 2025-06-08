@@ -14,4 +14,5 @@ public class DispatchDriver extends User{
     private String senderAddress;
     private boolean tripStart;
     private Receiver receiver;
+    private boolean atSenderAddress;
 }

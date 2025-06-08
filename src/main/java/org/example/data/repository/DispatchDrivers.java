@@ -10,6 +10,8 @@ public interface DispatchDrivers extends MongoRepository<DispatchDriver,String> 
     boolean existsByEmail(String email);
     DispatchDriver findByEmail(String email);
 
+    DispatchDriver getDispatchDriverByAvailable(boolean available);
+
     List<DispatchDriver> findAllByLogin(boolean login);
     List<DispatchDriver> findAllByAvailable(boolean available);
 }

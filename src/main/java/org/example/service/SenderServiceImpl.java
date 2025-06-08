@@ -55,7 +55,10 @@ public class SenderServiceImpl implements SenderService{
     public AddressesResponse orderDispatch(AddressesRequest request) {
         AddressesResponse response = new AddressesResponse();
         Sender sender = senders.findByEmail(request.getSenderEmail());
-
+        if(sender.getPreviousDispatch()== null){
+            sender.setPreviousDispatch(dispatchDrivers.getDispatchDriverByAvailable(false));
+        }
+        senders.save(sender);
         if(sender.isLogin()) {
             DispatchDriver driver = getDispatch(request);
             if (driver == null) throw new ServiceError("no available rider at the moment");
@@ -81,6 +84,7 @@ public class SenderServiceImpl implements SenderService{
     public CancelResponse cancelTrip(CancelRequest request) {
         CancelResponse response = new CancelResponse();
         Sender sender = senders.findByEmail(request.getEmail());
+
         if(sender.isLogin()) {
         DispatchDriver driver = sender.getDispatchDriver();
         sender.setDispatchDriver(null);
@@ -101,8 +105,7 @@ public class SenderServiceImpl implements SenderService{
         Sender sender = senders.findByEmail(request.getSenderEmail());
         List<DispatchDriver> list = dispatchDrivers.findAllByLogin(true);
         for(DispatchDriver dispatchDriver:list ){
-
-            if (dispatchDriver.isAvailable() && !sender.getPreviousDispatch().getId().equals(dispatchDriver.getId())){
+            if (dispatchDriver.isAvailable() && !sender.getPreviousDispatch().equals(dispatchDriver)){
                 return dispatchDriver;
             }
         }
@@ -118,8 +121,6 @@ public class SenderServiceImpl implements SenderService{
         sender.setPassword(request.getPassword());
         Validations.validatePhoneNumber(request);
         sender.setPhoneNumber(request.getPhoneNumber());
-        DispatchDriver defaultObj = new DispatchDriver();
-        sender.setPreviousDispatch(defaultObj);
         senders.save(sender);
     }
 /*
