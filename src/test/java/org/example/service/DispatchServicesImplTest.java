@@ -1,14 +1,15 @@
 package org.example.service;
 
-import org.example.dto.request.CompletedTripRequest;
-import org.example.dto.request.DispatchLoginRequest;
-import org.example.dto.request.DispatchRegisterRequest;
+import org.example.dto.request.*;
+import org.example.dto.response.AtSenderAddressResponse;
 import org.example.dto.response.CompletedTripResponse;
 import org.example.dto.response.DispatchLoginResponse;
 import org.example.dto.response.DispatchRegisterResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import javax.imageio.spi.ImageReaderWriterSpi;
 
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
@@ -55,8 +56,14 @@ public class DispatchServicesImplTest {
 
     @Test
     public void testCheckInformation(){
-        System.out.println(dispatchServices.checkInformation("Eletu@gmail.com"));
-        dispatchServices.atSenderAddress("Eletu@gmail.com");
+        CheckInfoRequest request1 = new CheckInfoRequest();
+        request1.setEmail("Eletu@gmail.com");
+        System.out.println(dispatchServices.checkInformation(request1));
+        //dispatchServices.atSenderAddress("Eletu@gmail.com");
+        AtSenderAddressRequest request = new AtSenderAddressRequest();
+        request.setEmail("Eletu@gmail.com");
+        AtSenderAddressResponse response = dispatchServices.atSenderAddress(request);
+        assertEquals("You have reached the address", response.getMessage());
     }
 
     @Test

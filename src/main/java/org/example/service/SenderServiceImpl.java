@@ -36,7 +36,7 @@ public class SenderServiceImpl implements SenderService{
         SenderLoginResponse response = new SenderLoginResponse();
         Sender sender = senders.findByEmail(request.getEmail());
         if(sender == null)throw new AccountException("Account does not exist");
-        if(!sender.getPassword().equals(request.getPassword()))throw new PasswordException("wrong password");
+        if(!sender.validatePassword(request.getPassword()))throw new PasswordException("wrong password");
         sender.setLogin(true);
         senders.save(sender);
         response.setMessage("Login successful");
@@ -48,7 +48,8 @@ public class SenderServiceImpl implements SenderService{
         AddressesResponse response = new AddressesResponse();
         Sender sender = senders.findByEmail(request.getSenderEmail());
         if(sender.getPreviousDispatch()== null){
-            sender.setPreviousDispatch(dispatchDrivers.getDispatchDriverByAvailable(false));
+            DispatchDriver rider = dispatchDrivers.getDispatchDriverByAvailable(false).get(0);
+            sender.setPreviousDispatch(rider);
         }
         senders.save(sender);
         if(sender.isLogin()) {

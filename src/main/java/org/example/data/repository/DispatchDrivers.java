@@ -11,7 +11,7 @@ public interface DispatchDrivers extends MongoRepository<DispatchDriver,String> 
     DispatchDriver findByEmail(String email);
     DispatchDriver findByPhoneNumber(String phoneNumber);
     boolean existsByPhoneNumber(String phoneNumber);
-    DispatchDriver getDispatchDriverByAvailable(boolean available);
+    List<DispatchDriver> getDispatchDriverByAvailable(boolean available);
 
     List<DispatchDriver> findAllByLogin(boolean login);
     List<DispatchDriver> findAllByAvailable(boolean available);

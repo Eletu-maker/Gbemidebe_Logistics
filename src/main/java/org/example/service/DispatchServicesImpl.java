@@ -4,10 +4,8 @@ import org.example.data.model.DispatchDriver;
 import org.example.data.model.Sender;
 import org.example.data.repository.DispatchDrivers;
 import org.example.data.repository.Senders;
-import org.example.dto.request.CancelRequest;
-import org.example.dto.request.CompletedTripRequest;
-import org.example.dto.request.DispatchLoginRequest;
-import org.example.dto.request.DispatchRegisterRequest;
+import org.example.dto.request.*;
+import org.example.dto.response.AtSenderAddressResponse;
 import org.example.dto.response.CompletedTripResponse;
 import org.example.dto.response.DispatchLoginResponse;
 import org.example.dto.response.DispatchRegisterResponse;
@@ -43,7 +41,7 @@ public class DispatchServicesImpl implements DispatchServices {
         DispatchLoginResponse response = new DispatchLoginResponse();
         DispatchDriver driver = dispatchDrivers.findByEmail(request.getEmail());
         if(driver == null) throw new AccountException("Account does not exist");
-        if(!driver.getPassword().equals(request.getPassword())) throw new PasswordException("wrong password");
+        if(!driver.validatePassword(request.getPassword())) throw new PasswordException("wrong password");
         driver.setLogin(true);
         driver.setAvailable(true);
         dispatchDrivers.save(driver);
@@ -52,9 +50,9 @@ public class DispatchServicesImpl implements DispatchServices {
     }
 
     @Override
-    public HashMap<String, String> checkInformation(String email) {
+    public HashMap<String, String> checkInformation(CheckInfoRequest request) {
         HashMap<String, String> map = new HashMap<>();
-        DispatchDriver driver = dispatchDrivers.findByEmail(email);
+        DispatchDriver driver = dispatchDrivers.findByEmail(request.getEmail());
         map.put("Sender PhoneNumber: ", driver.getSenderPhoneNumber());
         map.put("Sender Address: ", driver.getSenderAddress());
         map.put("Receiver Address: ",driver.getReceiver().getAddress());
@@ -62,6 +60,19 @@ public class DispatchServicesImpl implements DispatchServices {
         return map;
     }
 
+    @Override
+    public AtSenderAddressResponse atSenderAddress(AtSenderAddressRequest request) {
+        AtSenderAddressResponse response = new AtSenderAddressResponse();
+        DispatchDriver driver = dispatchDrivers.findByEmail(request.getEmail());
+        driver.setAtSenderAddress(true);
+        dispatchDrivers.save(driver);
+        Sender sender = senders.findByPhoneNumber(driver.getSenderPhoneNumber());
+        sender.setDispatchAsArrived(true);
+        senders.save(sender);
+        response.setMessage("You have reached the sender address");
+        return response;
+    }
+/*
     @Override
     public void atSenderAddress(String email) {
         DispatchDriver driver = dispatchDrivers.findByEmail(email);
@@ -73,11 +84,12 @@ public class DispatchServicesImpl implements DispatchServices {
 
     }
 
+
+ */
     @Override
     public CompletedTripResponse packageDelivered(CompletedTripRequest request) {
         CompletedTripResponse response = new CompletedTripResponse();
         DispatchDriver driver = dispatchDrivers.findByEmail(request.getEmail());
-        driver.setTripCompleted(true);
         dispatchDrivers.save(driver);
         Sender sender = senders.findByPhoneNumber(driver.getSenderPhoneNumber());
         sender.setGivenDispatchPackage(false);
