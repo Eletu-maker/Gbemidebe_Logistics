@@ -15,4 +15,5 @@ public class DispatchDriver extends User{
     private boolean tripStart;
     private Receiver receiver;
     private boolean atSenderAddress;
+
 }

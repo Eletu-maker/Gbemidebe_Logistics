@@ -5,22 +5,14 @@ import org.example.data.model.Receiver;
 import org.example.data.model.Sender;
 import org.example.data.repository.DispatchDrivers;
 import org.example.data.repository.Senders;
-import org.example.dto.request.AddressesRequest;
-import org.example.dto.request.CancelRequest;
-import org.example.dto.request.SenderLoginRequest;
-import org.example.dto.request.SenderRegisterRequest;
-import org.example.dto.response.AddressesResponse;
-import org.example.dto.response.CancelResponse;
-import org.example.dto.response.SenderLoginResponse;
-import org.example.dto.response.SenderRegisterResponse;
-import org.example.exception.AccountException;
-import org.example.exception.PasswordException;
-import org.example.exception.RegisterException;
-import org.example.exception.ServiceError;
+import org.example.dto.request.*;
+import org.example.dto.response.*;
+import org.example.exception.*;
 import org.example.validation.Validations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -33,7 +25,7 @@ public class SenderServiceImpl implements SenderService{
     @Override
     public SenderRegisterResponse register(SenderRegisterRequest request) {
         SenderRegisterResponse response = new SenderRegisterResponse();
-        if(senders.existsByEmail(request.getEmail())) throw new RegisterException("Account already exist");
+        if(senders.existsByEmail(request.getEmail()) || senders.existsByPhoneNumber(request.getPhoneNumber())) throw new RegisterException("Account already exist");
         else save(request);
         response.setMessage("register successful");
         return response;
@@ -84,21 +76,42 @@ public class SenderServiceImpl implements SenderService{
     public CancelResponse cancelTrip(CancelRequest request) {
         CancelResponse response = new CancelResponse();
         Sender sender = senders.findByEmail(request.getEmail());
+        if(!sender.isLogin())  throw new AccountException("You need to login before ordering a ride");
+        if(!sender.isGivenDispatchPackage()) {
+            DispatchDriver driver = sender.getDispatchDriver();
+            sender.setDispatchDriver(null);
+            sender.setAddress(null);
+            sender.setReceiver(null);
+            sender.setTripBegan(null);
+            sender.setDispatchAsArrived(false);
+            driver.setReceiver(null);
+            driver.setAvailable(true);
+            driver.setSenderPhoneNumber(null);
+            driver.setSenderAddress(null);
+            driver.setTripStart(false);
+            senders.save(sender);
+            dispatchDrivers.save(driver);
+            response.setMessage("ride Canceled");
+            return response;
+        } else throw new SenderException("Trip can't be cancel until package is delivered");
 
-        if(sender.isLogin()) {
-        DispatchDriver driver = sender.getDispatchDriver();
-        sender.setDispatchDriver(null);
-        sender.setAddress(null);
-        sender.setReceiver(null);
-        driver.setReceiver(null);
-        driver.setAvailable(true);
-        driver.setSenderPhoneNumber(null);
-        driver.setSenderAddress(null);
-        senders.save(sender);
-        dispatchDrivers.save(driver);
-        response.setMessage("ride Canceled");
+    }
+
+    @Override
+    public BeginTripResponse startTrip(BeginTripRequest request) {
+        BeginTripResponse response = new BeginTripResponse();
+        Sender sender = senders.findByEmail(request.getEmail());
+        if (sender.isDispatchAsArrived()){
+            sender.setGivenDispatchPackage(true);
+            sender.getDispatchDriver().setTripStart(true);
+            sender.setTripBegan(LocalDateTime.now());
+            DispatchDriver driver = sender.getDispatchDriver();
+            driver.setTripStart(true);
+            dispatchDrivers.save(driver);
+            senders.save(sender);
+        }else throw new SenderException("Trip can't begin without dispatch receiving the package");
+        response.setMessages("Trip have began");
         return response;
-        } else throw new AccountException("You need to login before ordering a ride");
     }
 
     private DispatchDriver getDispatch(AddressesRequest request){

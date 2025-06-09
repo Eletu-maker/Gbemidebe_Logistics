@@ -1,9 +1,14 @@
 package org.example.service;
 
 import org.example.data.model.DispatchDriver;
+import org.example.data.model.Sender;
 import org.example.data.repository.DispatchDrivers;
+import org.example.data.repository.Senders;
+import org.example.dto.request.CancelRequest;
+import org.example.dto.request.CompletedTripRequest;
 import org.example.dto.request.DispatchLoginRequest;
 import org.example.dto.request.DispatchRegisterRequest;
+import org.example.dto.response.CompletedTripResponse;
 import org.example.dto.response.DispatchLoginResponse;
 import org.example.dto.response.DispatchRegisterResponse;
 import org.example.exception.AccountException;
@@ -19,11 +24,15 @@ import java.util.HashMap;
 public class DispatchServicesImpl implements DispatchServices {
     @Autowired
     private DispatchDrivers dispatchDrivers;
+    @Autowired
+    private Senders senders;
+    @Autowired
+    private SenderServiceImpl senderService;
 
     @Override
     public DispatchRegisterResponse register(DispatchRegisterRequest request) {
         DispatchRegisterResponse response = new DispatchRegisterResponse();
-        if(dispatchDrivers.existsByEmail(request.getEmail())) throw new RegisterException("Account already exist");
+        if(dispatchDrivers.existsByEmail(request.getEmail()) || dispatchDrivers.existsByPhoneNumber(request.getPhoneNumber())) throw new RegisterException("Account already exist");
         else save(request);
         response.setMessage("register successful");
         return response;
@@ -53,8 +62,33 @@ public class DispatchServicesImpl implements DispatchServices {
         return map;
     }
 
+    @Override
+    public void atSenderAddress(String email) {
+        DispatchDriver driver = dispatchDrivers.findByEmail(email);
+        driver.setAtSenderAddress(true);
+        dispatchDrivers.save(driver);
+        Sender sender = senders.findByPhoneNumber(driver.getSenderPhoneNumber());
+        sender.setDispatchAsArrived(true);
+        senders.save(sender);
 
+    }
 
+    @Override
+    public CompletedTripResponse packageDelivered(CompletedTripRequest request) {
+        CompletedTripResponse response = new CompletedTripResponse();
+        DispatchDriver driver = dispatchDrivers.findByEmail(request.getEmail());
+        driver.setTripCompleted(true);
+        dispatchDrivers.save(driver);
+        Sender sender = senders.findByPhoneNumber(driver.getSenderPhoneNumber());
+        sender.setGivenDispatchPackage(false);
+        senders.save(sender);
+        CancelRequest cancelRequest = new CancelRequest();
+        cancelRequest.setEmail(sender.getEmail());
+        senderService.cancelTrip(cancelRequest);
+        response.setMessage("package delivered");
+
+        return response;
+    }
 
 
     /*

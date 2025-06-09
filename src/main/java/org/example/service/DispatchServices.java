@@ -1,7 +1,9 @@
 package org.example.service;
 
+import org.example.dto.request.CompletedTripRequest;
 import org.example.dto.request.DispatchLoginRequest;
 import org.example.dto.request.DispatchRegisterRequest;
+import org.example.dto.response.CompletedTripResponse;
 import org.example.dto.response.DispatchLoginResponse;
 import org.example.dto.response.DispatchRegisterResponse;
 
@@ -11,5 +13,7 @@ public interface DispatchServices {
     DispatchRegisterResponse register (DispatchRegisterRequest registerRequest);
     DispatchLoginResponse login (DispatchLoginRequest request);
     HashMap<String, String> checkInformation(String email);
+    void atSenderAddress(String email);
+    CompletedTripResponse packageDelivered (CompletedTripRequest request);
 
 }

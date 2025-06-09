@@ -13,11 +13,10 @@ public class Sender extends User{
     @Id
     private String id;
     private String address;
-    private LocalDateTime dispatchAtYourAddress;
+    private LocalDateTime tripBegan;
     private boolean dispatchAsArrived;
     private boolean givenDispatchPackage;
     private Receiver receiver;
     private DispatchDriver dispatchDriver;
-    private LocalDateTime receiverCollectedPackageFromDispatch;
     private DispatchDriver previousDispatch;
 }

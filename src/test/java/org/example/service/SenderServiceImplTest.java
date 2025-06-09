@@ -1,13 +1,7 @@
 package org.example.service;
 
-import org.example.dto.request.AddressesRequest;
-import org.example.dto.request.CancelRequest;
-import org.example.dto.request.SenderLoginRequest;
-import org.example.dto.request.SenderRegisterRequest;
-import org.example.dto.response.AddressesResponse;
-import org.example.dto.response.CancelResponse;
-import org.example.dto.response.SenderLoginResponse;
-import org.example.dto.response.SenderRegisterResponse;
+import org.example.dto.request.*;
+import org.example.dto.response.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -61,6 +55,14 @@ public class SenderServiceImplTest {
         AddressesResponse response = service.orderDispatch(request);
         assertEquals("Dispatch rider on his way",response.getMessage());
 
+    }
+
+    @Test
+    public void testTrip(){
+        BeginTripRequest request = new BeginTripRequest();
+        request.setEmail("usman@gmail.com");
+        BeginTripResponse response = service.startTrip(request);
+        assertEquals("Trip have began",response.getMessages());
     }
 
     @Test
