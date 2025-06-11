@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-
+@CrossOrigin
 @RestController
 @RequestMapping("/api")
 public class UserController {
@@ -43,7 +43,7 @@ public class UserController {
     public ResponseEntity<?> registerRider(@RequestBody DispatchRegisterRequest request){
         try {
             DispatchRegisterResponse response = dispatchServices.register(request);
-            return new ResponseEntity<>(new ApiResponse(true,response),HttpStatus.CREATED);
+            return new ResponseEntity<>(new ApiResponse(true,response.getMessage()),HttpStatus.CREATED);
         } catch (Exception e){
             return new ResponseEntity<>(new ApiResponse(false,e.getMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -53,7 +53,7 @@ public class UserController {
     public ResponseEntity<?> loginRider(@RequestBody DispatchLoginRequest request){
         try {
             DispatchLoginResponse response = dispatchServices.login(request);
-            return new ResponseEntity<>(new ApiResponse(true,response),HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse(true,response.getMessage()),HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(new ApiResponse(false,e.getMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
         }
