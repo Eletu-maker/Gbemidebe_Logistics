@@ -39,6 +39,16 @@ public class UserController {
         }
     }
 
+    @PostMapping("/getSender")
+    public ResponseEntity<?> getSender(@RequestBody SenderRequest request){
+        try {
+            SenderResponse response = senderService.getSender(request);
+            return new ResponseEntity<>(new ApiResponse(true,response),HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(new ApiResponse(false,e.getMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
+    }
     @PostMapping("/registerRider")
     public ResponseEntity<?> registerRider(@RequestBody DispatchRegisterRequest request){
         try {
@@ -120,6 +130,8 @@ public class UserController {
             return new ResponseEntity<>((new ApiResponse(false,e.getMessage())),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
 }
 
 

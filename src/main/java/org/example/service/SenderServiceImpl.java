@@ -137,6 +137,14 @@ public class SenderServiceImpl implements SenderService{
         sender.setPhoneNumber(request.getPhoneNumber());
         senders.save(sender);
     }
+
+    public SenderResponse getSender(SenderRequest request){
+        SenderResponse response = new SenderResponse();
+        Sender sender = senders.findByEmail(request.getEmail());
+        response.setSender(sender);
+        return response;
+
+    }
 /*
     @Override
     public SenderLoginResponse login(SenderLoginRequest request){
