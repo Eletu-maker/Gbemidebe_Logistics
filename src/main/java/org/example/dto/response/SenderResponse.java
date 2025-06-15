@@ -6,6 +6,5 @@ import lombok.Setter;
 import org.example.data.model.Sender;
 @Data
 public class SenderResponse {
-
     private Sender sender;
 }

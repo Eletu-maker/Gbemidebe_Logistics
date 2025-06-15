@@ -69,13 +69,24 @@ public class UserController {
         }
     }
 
+    @PostMapping("/getRider")
+    public ResponseEntity<?> getRider(@RequestBody DispatchRequest request){
+        try {
+            DispatchResponse response = dispatchServices.getRider(request);
+            return new ResponseEntity<>(new ApiResponse(true,response.getRider()),HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(new ApiResponse(false,e.getMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping("/orderRide")
     public ResponseEntity<?> orderRide(@RequestBody AddressesRequest request){
         try {
             AddressesResponse response = senderService.orderDispatch(request);
             return new ResponseEntity<>((new ApiResponse(true,response)),HttpStatus.OK);
         }catch (Exception e){
-            return new ResponseEntity<>((new ApiResponse(false,e.getMessage())),HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>((new ApiResponse(false,e.getMessage())),HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 
@@ -131,6 +142,37 @@ public class UserController {
         }
     }
 
+    @PostMapping("/logoutSender")
+    public ResponseEntity<?> logoutSender(@RequestBody SenderLogOutRequest request){
+        try {
+            SenderLogOutResponse response = senderService.logout(request);
+            return  new ResponseEntity<>(new ApiResponse(true,response),HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>((new ApiResponse(false,e.getMessage())),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    @PostMapping("/logoutRider")
+    public ResponseEntity<?> logoutRider(@RequestBody DispatchLogOutRequest request){
+        try {
+            DispatchLogOutResponse response = dispatchServices.logout(request);
+            return  new ResponseEntity<>(new ApiResponse(true,response),HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>((new ApiResponse(false,e.getMessage())),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @PostMapping("/arrived")
+    public ResponseEntity<?> arrived(@RequestBody ArrivedRequest request){
+        try {
+            ArrivedResponse response= senderService.arrived(request);
+            return  new ResponseEntity<>(new ApiResponse(true,response),HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>((new ApiResponse(false,e.getMessage())),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }
 

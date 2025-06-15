@@ -5,13 +5,11 @@ import org.example.data.model.Sender;
 import org.example.data.repository.DispatchDrivers;
 import org.example.data.repository.Senders;
 import org.example.dto.request.*;
-import org.example.dto.response.AtSenderAddressResponse;
-import org.example.dto.response.CompletedTripResponse;
-import org.example.dto.response.DispatchLoginResponse;
-import org.example.dto.response.DispatchRegisterResponse;
+import org.example.dto.response.*;
 import org.example.exception.AccountException;
 import org.example.exception.PasswordException;
 import org.example.exception.RegisterException;
+import org.example.exception.ServiceError;
 import org.example.validation.Validations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,6 +66,7 @@ public class DispatchServicesImpl implements DispatchServices {
         dispatchDrivers.save(driver);
         Sender sender = senders.findByPhoneNumber(driver.getSenderPhoneNumber());
         sender.setDispatchAsArrived(true);
+        sender.setSeenRider(true);
         senders.save(sender);
         response.setMessage("You have reached the sender address");
         return response;
@@ -102,6 +101,19 @@ public class DispatchServicesImpl implements DispatchServices {
         return response;
     }
 
+    @Override
+    public DispatchLogOutResponse logout(DispatchLogOutRequest request) {
+        DispatchLogOutResponse response = new DispatchLogOutResponse();
+        DispatchDriver driver = dispatchDrivers.findByEmail(request.getEmail());
+        if(driver.isTripStart()) throw new ServiceError("can not logout until package has being delivered");
+        driver.setLogin(false);
+        dispatchDrivers.save(driver);
+        response.setMessage("logout successful");
+        return response;
+    }
+
+
+
 
     /*
         @Override
@@ -130,6 +142,12 @@ public class DispatchServicesImpl implements DispatchServices {
         dispatchDrivers.save(dispatchDriver);
     }
 
+    public DispatchResponse getRider(DispatchRequest request){
+        DispatchResponse response = new DispatchResponse();
+        DispatchDriver driver = dispatchDrivers.findByEmail(request.getEmail());
+        response.setRider(driver);
+        return response;
+    }
 
 
 }

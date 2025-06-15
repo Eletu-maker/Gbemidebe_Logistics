@@ -73,5 +73,12 @@ public class SenderServiceImplTest {
         assertEquals("ride Canceled",response.getMessage());
     }
 
+    @Test
+    public void testArrived(){
+        ArrivedRequest request = new ArrivedRequest();
+        request.setEmail("beeyemi@gmail.com");
+        ArrivedResponse response = service.arrived(request);
+        assertEquals("ok",response.getMessage());
+    }
 
 }

@@ -11,5 +11,6 @@ public interface SenderService {
     AddressesResponse orderDispatch(AddressesRequest request);
     CancelResponse cancelTrip(CancelRequest request);
     BeginTripResponse startTrip (BeginTripRequest request);
+    SenderLogOutResponse logout (SenderLogOutRequest request);
 
 }

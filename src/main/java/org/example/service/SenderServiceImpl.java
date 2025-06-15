@@ -85,6 +85,7 @@ public class SenderServiceImpl implements SenderService{
             sender.setReceiver(null);
             sender.setTripBegan(null);
             sender.setDispatchAsArrived(false);
+            //sender.setSeenRider(false);
             driver.setReceiver(null);
             driver.setAvailable(true);
             driver.setSenderPhoneNumber(null);
@@ -115,11 +116,31 @@ public class SenderServiceImpl implements SenderService{
         return response;
     }
 
+    public ArrivedResponse arrived (ArrivedRequest request){
+        ArrivedResponse response = new ArrivedResponse();
+        Sender sender = senders.findByEmail(request.getEmail());
+        sender.setSeenRider(false);
+        senders.save(sender);
+        response.setMessage("ok");
+        return  response;
+    }
+
+    @Override
+    public SenderLogOutResponse logout(SenderLogOutRequest request) {
+        SenderLogOutResponse response = new SenderLogOutResponse();
+        Sender sender = senders.findByEmail(request.getEmail());
+        if(sender.getTripBegan() != null) throw new ServiceError("can not logout until package has being delivered");
+        sender.setLogin(false);
+        senders.save(sender);
+        response.setMessage("logout successful");
+        return response;
+    }
+
     private DispatchDriver getDispatch(AddressesRequest request){
         Sender sender = senders.findByEmail(request.getSenderEmail());
         List<DispatchDriver> list = dispatchDrivers.findAllByLogin(true);
         for(DispatchDriver dispatchDriver:list ){
-            if (dispatchDriver.isAvailable() && !sender.getPreviousDispatch().equals(dispatchDriver)){
+            if (dispatchDriver.isAvailable() && !sender.getPreviousDispatch().getId().equals(dispatchDriver.getId())){
                 return dispatchDriver;
             }
         }
@@ -145,6 +166,8 @@ public class SenderServiceImpl implements SenderService{
         return response;
 
     }
+
+
 /*
     @Override
     public SenderLoginResponse login(SenderLoginRequest request){

@@ -15,6 +15,7 @@ public class Sender extends User{
     private String address;
     private LocalDateTime tripBegan;
     private boolean dispatchAsArrived;
+    private boolean seenRider;
     private boolean givenDispatchPackage;
     private Receiver receiver;
     private DispatchDriver dispatchDriver;
