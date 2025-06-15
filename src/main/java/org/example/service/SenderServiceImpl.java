@@ -59,6 +59,7 @@ public class SenderServiceImpl implements SenderService{
             sender.setPreviousDispatch(driver);
             sender.setAddress(request.getSenderAddress());
             Receiver receiver = new Receiver();
+            Validations.validatePhoneNumber(request);
             receiver.setPhoneNumber(request.getReceiverPhoneNumber());
             receiver.setAddress(request.getFinalDestination());
             sender.setReceiver(receiver);

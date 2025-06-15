@@ -1,6 +1,7 @@
 package org.example.validation;
 import java.util.regex.Pattern;
 
+import org.example.dto.request.AddressesRequest;
 import org.example.dto.request.DispatchRegisterRequest;
 import org.example.dto.request.SenderRegisterRequest;
 import org.example.exception.EmailException;
@@ -65,5 +66,17 @@ public class Validations {
         if(registerRequest.getPassword().contains(" ")) throw  new PasswordException("password must not contain space");
     }
 
+
+    public static void validatePhoneNumber(AddressesRequest registerRequest) {
+        String phoneNumber = registerRequest.getReceiverPhoneNumber();
+        phoneNumber = phoneNumber.replaceAll("\\s+", "").trim();
+        String regex = "^(?:0|\\+234|234)(701|702|703|704|705|706|707|708|709|" +
+                "802|803|804|805|806|807|808|809|" +
+                "810|811|812|813|814|815|816|817|818|819|" +
+                "901|902|903|904|905|906|907|908|909|" +
+                "911|913|915|916|917|918|919)[0-9]{7}$";
+        boolean check = phoneNumber.matches(regex);
+        if(!check) throw new PhoneNumberException("please enter a Nigeria phone number");
+    }
 
 }
