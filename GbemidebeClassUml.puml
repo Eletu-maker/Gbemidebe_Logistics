@@ -1,0 +1,181 @@
+@startuml
+
+top to bottom direction
+skinparam linetype ortho
+
+class AccountException
+class AddressException
+class AddressesRequest {
+  - receiverPhoneNumber: String
+  - senderAddress: String
+  - finalDestination: String
+  - senderEmail: String
+}
+class AddressesResponse {
+  - message: String
+}
+class ApiResponse {
+  - message: boolean
+  - data: Object
+}
+class ArrivedRequest {
+  - email: String
+}
+class ArrivedResponse {
+  - message: String
+}
+class AtSenderAddressRequest {
+  - email: String
+}
+class AtSenderAddressResponse {
+  - message: String
+}
+class BeginTripRequest {
+  - email: String
+}
+class BeginTripResponse {
+  - messages: String
+}
+class CancelRequest {
+  - email: String
+}
+class CancelResponse {
+  - message: String
+}
+class CheckInfoRequest {
+  - email: String
+}
+class CompletedTripRequest {
+  - email: String
+}
+class CompletedTripResponse {
+  - message: String
+}
+class DispatchDriver {
+  - id: String
+  - tripStart: boolean
+  - senderPhoneNumber: String
+  - atSenderAddress: boolean
+  - receiver: Receiver
+  - available: boolean
+  - senderAddress: String
+}
+interface DispatchDrivers << interface >>
+class DispatchLogOutRequest {
+  - email: String
+}
+class DispatchLogOutResponse {
+  - message: String
+}
+class DispatchLoginRequest {
+  - email: String
+  - password: String
+}
+class DispatchLoginResponse {
+  - message: String
+}
+class DispatchRegisterRequest {
+  - name: String
+  - email: String
+  - password: String
+  - phoneNumber: String
+}
+class DispatchRegisterResponse {
+  - message: String
+}
+class DispatchRequest {
+  - email: String
+}
+class DispatchResponse {
+  - rider: DispatchDriver
+}
+interface DispatchServices << interface >>
+class DispatchServicesImpl {
+  - senderService: SenderServiceImpl
+  - senders: Senders
+  - dispatchDrivers: DispatchDrivers
+}
+class DispatchServicesImplTest {
+  - dispatchServices: DispatchServicesImpl
+}
+class EmailException
+class Main
+class Mapper
+class NameException
+class PasswordException
+class PhoneNumberException
+class Receiver {
+  - phoneNumber: String
+  - address: String
+}
+class RegisterException
+class Sender {
+  - previousDispatch: DispatchDriver
+  - givenDispatchPackage: boolean
+  - tripBegan: LocalDateTime
+  - id: String
+  - receiver: Receiver
+  - address: String
+  - seenRider: boolean
+  - dispatchAsArrived: boolean
+  - dispatchDriver: DispatchDriver
+}
+class SenderException
+class SenderLogOutRequest {
+  - email: String
+}
+class SenderLogOutResponse {
+  - message: String
+}
+class SenderLoginRequest {
+  - password: String
+  - email: String
+}
+class SenderLoginResponse {
+  - message: String
+}
+class SenderRegisterRequest {
+  - password: String
+  - name: String
+  - email: String
+  - phoneNumber: String
+}
+class SenderRegisterResponse {
+  - message: String
+}
+class SenderRequest {
+  - email: String
+}
+class SenderResponse {
+  - sender: Sender
+}
+interface SenderService << interface >>
+class SenderServiceImpl {
+  - dispatchDrivers: DispatchDrivers
+  - senders: Senders
+}
+class SenderServiceImplTest {
+  - service: SenderServiceImpl
+}
+interface Senders << interface >>
+class ServiceError
+class User {
+  - name: String
+  - login: boolean
+  - password: String
+  - email: String
+  - phoneNumber: String
+}
+class UserController {
+  - senderService: SenderServiceImpl
+  - dispatchServices: DispatchServicesImpl
+}
+class Validations {
+  - EMAIL_REGEX: String
+}
+
+DispatchDriver            -[#000082,plain]-^  User
+DispatchServicesImpl      -[#008200,dashed]-^  DispatchServices
+Sender                    -[#000082,plain]-^  User
+SenderServiceImpl         -[#008200,dashed]-^  SenderService
+@enduml

@@ -1,8 +1,10 @@
 package org.example.service;
 
 import org.example.data.model.DispatchDriver;
+import org.example.data.model.MessageBox;
 import org.example.data.model.Sender;
 import org.example.data.repository.DispatchDrivers;
+import org.example.data.repository.Messageboxes;
 import org.example.data.repository.Senders;
 import org.example.dto.request.*;
 import org.example.dto.response.*;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class DispatchServicesImpl implements DispatchServices {
@@ -24,7 +27,8 @@ public class DispatchServicesImpl implements DispatchServices {
     private Senders senders;
     @Autowired
     private SenderServiceImpl senderService;
-
+    @Autowired
+    private Messageboxes messageboxes;
     @Override
     public DispatchRegisterResponse register(DispatchRegisterRequest request) {
         DispatchRegisterResponse response = new DispatchRegisterResponse();
@@ -71,20 +75,41 @@ public class DispatchServicesImpl implements DispatchServices {
         response.setMessage("You have reached the sender address");
         return response;
     }
-/*
-    @Override
-    public void atSenderAddress(String email) {
-        DispatchDriver driver = dispatchDrivers.findByEmail(email);
-        driver.setAtSenderAddress(true);
-        dispatchDrivers.save(driver);
-        Sender sender = senders.findByPhoneNumber(driver.getSenderPhoneNumber());
-        sender.setDispatchAsArrived(true);
-        senders.save(sender);
 
+
+
+    public List<String> message (messageRequest request){
+        DispatchDriver driver = dispatchDrivers.findByEmail(request.getEmail());
+        Sender sender = senders.findByPhoneNumber(driver.getSenderPhoneNumber());
+        MessageBox box = messageboxes.findBySender(sender);
+        String words = "Rider: " + request.getChat();
+        box.getBox().add(words);
+        messageboxes.save(box);
+        return box.getBox();
     }
 
+    @Override
+    public List<String> messageBox(message request) {
+        DispatchDriver driver = dispatchDrivers.findByEmail(request.getEmail());
+        Sender sender = senders.findByPhoneNumber(driver.getSenderPhoneNumber());
+        MessageBox box = messageboxes.findBySender(sender);
+        return box.getBox();
+    }
 
- */
+    /*
+        @Override
+        public void atSenderAddress(String email) {
+            DispatchDriver driver = dispatchDrivers.findByEmail(email);
+            driver.setAtSenderAddress(true);
+            dispatchDrivers.save(driver);
+            Sender sender = senders.findByPhoneNumber(driver.getSenderPhoneNumber());
+            sender.setDispatchAsArrived(true);
+            senders.save(sender);
+
+        }
+
+
+     */
     @Override
     public CompletedTripResponse packageDelivered(CompletedTripRequest request) {
         CompletedTripResponse response = new CompletedTripResponse();

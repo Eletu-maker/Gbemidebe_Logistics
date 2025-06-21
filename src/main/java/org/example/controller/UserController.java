@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import org.example.data.model.MessageBox;
 import org.example.dto.request.*;
 import org.example.dto.response.*;
 import org.example.service.DispatchServicesImpl;
@@ -10,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
+
 @CrossOrigin
 @RestController
 @RequestMapping("/api")
@@ -174,6 +177,50 @@ public class UserController {
         }
     }
 
+
+    @PostMapping("/messageFromSender")
+    public ResponseEntity<?> messageFromSender(@RequestBody messageRequest request){
+        try{
+            List<String> response = senderService.message(request);
+            return  new ResponseEntity<>(new ApiResponse(true,response),HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>((new ApiResponse(false,e.getMessage())),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
+    @PostMapping("/messageFromRider")
+    public ResponseEntity<?> messageFromRider(@RequestBody messageRequest request){
+        try{
+            List<String> response = dispatchServices.message(request);
+            return  new ResponseEntity<>(new ApiResponse(true,response),HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>((new ApiResponse(false,e.getMessage())),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @PostMapping("/senderMessage")
+    public ResponseEntity<?> senderMessage(@RequestBody message request){
+        try{
+            List<String> response = senderService.messageBox(request);
+            return  new ResponseEntity<>(new ApiResponse(true,response),HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>((new ApiResponse(false,e.getMessage())),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @PostMapping("/riderMessage")
+    public ResponseEntity<?> riderMessage(@RequestBody message request){
+        try{
+            List<String> response = dispatchServices.messageBox(request);
+            return  new ResponseEntity<>(new ApiResponse(true,response),HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>((new ApiResponse(false,e.getMessage())),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
 
 

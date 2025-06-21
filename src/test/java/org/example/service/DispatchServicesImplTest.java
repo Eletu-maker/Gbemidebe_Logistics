@@ -64,6 +64,14 @@ public class DispatchServicesImplTest {
     }
 
     @Test
+    public void testMessage(){
+        messageRequest request = new messageRequest();
+        request.setEmail("Eletu@gmail.com");
+        request.setChat("hello im on my way");
+        dispatchServices.message(request);
+    }
+
+    @Test
     public void testPackageDelivered(){
         CompletedTripRequest request = new CompletedTripRequest();
         request.setEmail("Eletu@gmail.com");

@@ -1,0 +1,25 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+actor Sender
+actor Rider
+
+rectangle "Dispatch Logistics System" {
+    Sender --> (Register as Sender)
+    Sender --> (Login as Sender)
+    Sender --> (Get Sender Info)
+    Sender --> (Order a Ride)
+    Sender --> (Start Trip)
+    Sender --> (Cancel Trip)
+    Sender --> (Mark Rider as Arrived)
+    Sender --> (Logout Sender)
+
+    Rider --> (Register as Rider)
+    Rider --> (Login as Rider)
+    Rider --> (Get Rider Info)
+    Rider --> (Check Pickup/Delivery Info)
+    Rider --> (Arrive at Sender Address)
+    Rider --> (Package Delivered)
+    Rider --> (Logout Rider)
+}
+@enduml

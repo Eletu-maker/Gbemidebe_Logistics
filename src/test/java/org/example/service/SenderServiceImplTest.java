@@ -56,6 +56,13 @@ public class SenderServiceImplTest {
         assertEquals("Dispatch rider on his way",response.getMessage());
 
     }
+    @Test
+    public void testMessage(){
+        messageRequest request = new messageRequest();
+        request.setEmail("usman@gmail.com");
+        request.setChat("ok buy chow as u dey come");
+        service.message(request);
+    }
 
     @Test
     public void testTrip(){

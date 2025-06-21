@@ -1,9 +1,11 @@
 package org.example.service;
 
 import org.example.data.model.DispatchDriver;
+import org.example.data.model.MessageBox;
 import org.example.data.model.Receiver;
 import org.example.data.model.Sender;
 import org.example.data.repository.DispatchDrivers;
+import org.example.data.repository.Messageboxes;
 import org.example.data.repository.Senders;
 import org.example.dto.request.*;
 import org.example.dto.response.*;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -22,6 +25,8 @@ public class SenderServiceImpl implements SenderService{
     private Senders senders;
     @Autowired
     private DispatchDrivers dispatchDrivers;
+    @Autowired
+    private Messageboxes messageboxes;
     @Override
     public SenderRegisterResponse register(SenderRegisterRequest request) {
         SenderRegisterResponse response = new SenderRegisterResponse();
@@ -69,15 +74,41 @@ public class SenderServiceImpl implements SenderService{
             driver.setReceiver(receiver);
             senders.save(sender);
             dispatchDrivers.save(driver);
+            MessageBox box = new MessageBox();
+            box.setSender(sender);
+            box.setBox(new ArrayList<String>());
+            messageboxes.save(box);
+
             response.setMessage("Dispatch rider on his way");
         } else throw new AccountException("You need to login before ordering a ride");
         return response;
     }
 
+
+    public List<String> message (messageRequest request){
+        Sender sender = senders.findByEmail(request.getEmail());
+        MessageBox box = messageboxes.findBySender(sender);
+        String word = "Sender: "+ request.getChat();
+        box.getBox().add(word);
+        messageboxes.save(box);
+        return box.getBox();
+    }
+
+    @Override
+    public List<String> messageBox(message request) {
+        Sender sender = senders.findByEmail(request.getEmail());
+        MessageBox box = messageboxes.findBySender(sender);
+        return box.getBox();
+    }
+
     @Override
     public CancelResponse cancelTrip(CancelRequest request) {
         CancelResponse response = new CancelResponse();
+
         Sender sender = senders.findByEmail(request.getEmail());
+        MessageBox box = messageboxes.findBySender(sender);
+        messageboxes.delete(box);
+        //System.out.println(box);
         if(!sender.isLogin())  throw new AccountException("You need to login before ordering a ride");
         if(!sender.isGivenDispatchPackage()) {
             DispatchDriver driver = sender.getDispatchDriver();
@@ -92,8 +123,13 @@ public class SenderServiceImpl implements SenderService{
             driver.setSenderPhoneNumber(null);
             driver.setSenderAddress(null);
             driver.setTripStart(false);
+
+
+
             senders.save(sender);
             dispatchDrivers.save(driver);
+
+
             response.setMessage("ride Canceled");
             return response;
         } else throw new SenderException("Trip can't be cancel until package is delivered");
